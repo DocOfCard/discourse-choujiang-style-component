@@ -184,7 +184,6 @@ function decorateLotteryResult($elem) {
           <div class="cj-result-rank">第 ${escapeHtml(winner.rank)} 名</div>
           <div class="cj-result-winner-main">
             <a class="cj-result-user" href="/u/${encodeURIComponent(winner.username)}">@${escapeHtml(winner.username)}</a>
-            <span class="cj-result-user-id">ID ${escapeHtml(winner.userId)}</span>
           </div>
           <div class="cj-result-prize"><span>${escapeHtml(winner.prizeLabel || "活动奖品")}</span>${escapeHtml(winner.prize || fields["活动奖品"] || "-")}</div>
         </div>`
@@ -196,10 +195,9 @@ function decorateLotteryResult($elem) {
       <div class="cj-result-title">🎉 开奖结果：${escapeHtml(fields["抽奖名称"] || "抽奖活动")}</div>
       <ul class="cj-result-info">
         <li><span>开奖记录：</span><code>${escapeHtml(fields["开奖记录"] || "-")}</code></li>
-        <li><span>开奖时间：</span>${escapeHtml(fields["开奖时间"] || "-")}</li>
       </ul>
       <div class="cj-result-winners">${winnerHtml}</div>
-      <div class="cj-result-footer">恭喜中奖用户！</div>
+      <div class="cj-result-footer">恭喜以上中奖用户！</div>
     </div>`;
 
   $elem.html(rawHtml.replace(/\[抽奖结果\][\s\S]*?\[\/抽奖结果\]/, resultHtml));
