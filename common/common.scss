@@ -267,3 +267,63 @@ html.dark .choujiang-participation-stamp.is-winner {
     }
   }
 }
+
+// Multi-prize lottery tiers
+.choujiang-card {
+  .cj-single-prize {
+    margin: 0 0 10px;
+    color: var(--primary);
+
+    span {
+      color: var(--primary-medium);
+    }
+  }
+
+  .cj-prize-list {
+    display: grid;
+    gap: 7px;
+    margin: 0 0 12px;
+  }
+
+  .cj-prize-item {
+    display: grid;
+    grid-template-columns: minmax(5.5em, max-content) minmax(0, 1fr) max-content;
+    gap: 10px;
+    align-items: center;
+    padding: 8px 10px;
+    border: 1px solid var(--primary-low);
+    border-radius: 6px;
+    background: var(--secondary);
+
+    strong {
+      color: var(--tertiary);
+    }
+  }
+
+  .cj-prize-name {
+    min-width: 0;
+    color: var(--primary);
+    overflow-wrap: anywhere;
+  }
+
+  .cj-prize-count {
+    color: var(--primary-medium);
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .cj-lottery-meta {
+    margin-top: 0;
+  }
+}
+
+@media (max-width: 600px) {
+  .choujiang-card .cj-prize-item {
+    grid-template-columns: minmax(0, 1fr) max-content;
+
+    .cj-prize-name {
+      grid-column: 1 / -1;
+      grid-row: 2;
+    }
+  }
+}

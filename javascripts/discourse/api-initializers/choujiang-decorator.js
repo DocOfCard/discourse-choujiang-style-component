@@ -28,13 +28,30 @@ export default apiInitializer("1.14.0", (api) => {
         .map((line) => decodeHtml(line).trim())
         .filter(Boolean);
       const fields = {};
+      const prizes = [];
 
       lines.forEach((line) => {
         const fieldMatch = line.match(/^([^：:]+)[：:](.*)$/);
-        if (fieldMatch) {
-          fields[fieldMatch[1].trim()] = fieldMatch[2].trim();
+        if (!fieldMatch) {
+          return;
         }
+        const key = fieldMatch[1].trim();
+        const value = fieldMatch[2].trim();
+        const prizeMatch = key.match(/^奖品(\d+)$/);
+        if (prizeMatch) {
+          const [label, prize, countText] = value.split("|").map((item) => item.trim());
+          const count = Number.parseInt(countText, 10);
+          if (label && prize && Number.isInteger(count) && count > 0) {
+            prizes.push({ index: Number(prizeMatch[1]), label, prize, count });
+          }
+          return;
+        }
+        fields[key] = value;
       });
+      prizes.sort((a, b) => a.index - b.index);
+      const totalWinnerCount = prizes.length
+        ? prizes.reduce((sum, item) => sum + item.count, 0)
+        : fields["获奖人数"] || "";
 
       const instructionTopicId = Number(
         siteSettings.choujiang_instruction_topic_id || 0
@@ -43,12 +60,23 @@ export default apiInitializer("1.14.0", (api) => {
         ? `/t/${instructionTopicId}`
         : "/t/topic/204";
 
+      const prizeHtml = prizes.length
+        ? `<div class="cj-prize-list">
+            ${prizes.map((item) => `
+              <div class="cj-prize-item">
+                <strong>${escapeHtml(item.label)}</strong>
+                <span class="cj-prize-name">${escapeHtml(item.prize)}</span>
+                <span class="cj-prize-count">× ${escapeHtml(item.count)}</span>
+              </div>`).join("")}
+          </div>`
+        : `<div class="cj-single-prize"><span>活动奖品：</span><strong>${escapeHtml(fields["活动奖品"] || "")}</strong></div>`;
+
       const html = `
-        <div class="choujiang-card">
+        <div class="choujiang-card ${prizes.length ? "is-multi-prize" : ""}">
           <div class="cj-title">🎉 抽奖活动：${escapeHtml(fields["抽奖名称"] || "")}</div>
-          <ul>
-            <li><span>活动奖品：</span>${escapeHtml(fields["活动奖品"] || "")}</li>
-            <li><span>获奖人数：</span>${escapeHtml(fields["获奖人数"] || "")}</li>
+          ${prizeHtml}
+          <ul class="cj-lottery-meta">
+            <li><span>获奖人数：</span>${escapeHtml(totalWinnerCount)}</li>
             <li><span>开奖时间：</span>${escapeHtml(fields["开奖时间"] || "")}</li>
             <li><span>最低等级：</span>${escapeHtml(fields["最低等级"] || fields["最低信任等级"] || "TL0")}</li>
             <li><span>成就点数：</span>${escapeHtml(fields["成就点数"] || fields["最低积分"] || "0")}</li>
@@ -127,13 +155,14 @@ function decorateLotteryResult($elem) {
   const winners = [];
 
   for (const line of lines) {
-    const winner = line.match(/^中奖者(\d+)[：:](\-?\d+)\|([^|]*)\|(.*)$/);
+    const winner = line.match(/^中奖者(\d+)[：:](\-?\d+)\|([^|]*)\|([^|]*)\|(.*)$/);
     if (winner) {
       winners.push({
         rank: winner[1],
         userId: winner[2],
         username: winner[3],
-        prize: winner[4],
+        prizeLabel: winner[4],
+        prize: winner[5],
       });
       continue;
     }
@@ -157,7 +186,7 @@ function decorateLotteryResult($elem) {
             <a class="cj-result-user" href="/u/${encodeURIComponent(winner.username)}">@${escapeHtml(winner.username)}</a>
             <span class="cj-result-user-id">ID ${escapeHtml(winner.userId)}</span>
           </div>
-          <div class="cj-result-prize"><span>活动奖品</span>${escapeHtml(winner.prize || fields["活动奖品"] || "-")}</div>
+          <div class="cj-result-prize"><span>${escapeHtml(winner.prizeLabel || "活动奖品")}</span>${escapeHtml(winner.prize || fields["活动奖品"] || "-")}</div>
         </div>`
     )
     .join("");
