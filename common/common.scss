@@ -1,0 +1,278 @@
+// Lottery topic card
+.choujiang-card {
+  margin: 20px 0;
+  padding: 18px 14px;
+  border: 1px solid var(--primary-low);
+  border-radius: 8px;
+  background: var(--primary-very-low);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 3%);
+
+  .cj-title {
+    margin-bottom: 10px;
+    color: var(--tertiary);
+    font-size: 1.2em;
+    font-weight: 700;
+  }
+
+  ul {
+    margin: 0 0 10px;
+    padding: 0;
+    list-style: none;
+  }
+
+  li {
+    margin-bottom: 4px;
+    color: var(--primary);
+  }
+
+  li span {
+    color: var(--primary-medium);
+  }
+
+  .cj-footer {
+    color: var(--tertiary);
+    font-weight: 700;
+  }
+}
+
+// Plugin admin helpers
+.choujiang-admin-table {
+  width: 100%;
+}
+
+.choujiang-status {
+  font-weight: 600;
+}
+
+.choujiang-error {
+  color: var(--danger);
+  white-space: pre-wrap;
+}
+
+.choujiang-plugin-info {
+  margin-bottom: 2em;
+  padding: 1em;
+  border: 1px solid var(--primary-low);
+  border-radius: var(--d-border-radius);
+  background: var(--primary-very-low);
+
+  dl {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: 0.4em 1em;
+  }
+
+  dt {
+    font-weight: 600;
+  }
+
+  dd {
+    margin: 0;
+  }
+}
+
+.choujiang-sync-message {
+  margin-top: 0.75em;
+}
+
+// Compact participation stamp
+.cooked.has-choujiang-participation-stamp {
+  position: relative;
+}
+
+.choujiang-participation-stamp {
+  position: absolute;
+  top: 0.2em;
+  right: 0.15em;
+  z-index: 1;
+  padding: 0.2em 0.5em;
+  border: 1px solid currentColor;
+  border-radius: 0.3em;
+  background: var(--secondary);
+  font-size: 0.75em;
+  font-weight: 700;
+  line-height: 1.35;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0.82;
+  transform: rotate(-2deg);
+
+  &.is-eligible {
+    color: var(--success);
+  }
+
+  &.is-ineligible {
+    color: var(--danger);
+  }
+
+  &.is-winner {
+    padding: 0.28em 0.65em;
+    border-width: 2px;
+    border-radius: 0.4em;
+    color: #9a6700;
+    background: #fff6cc;
+    box-shadow: 0 1px 4px rgb(154 103 0 / 18%);
+    font-size: 0.8em;
+    opacity: 0.96;
+    transform: rotate(-3deg);
+  }
+}
+
+.discourse-dark-mode .choujiang-participation-stamp.is-winner,
+html.dark .choujiang-participation-stamp.is-winner {
+  color: #ffd76a;
+  background: #3b2d08;
+}
+
+@media (max-width: 600px) {
+  .choujiang-participation-stamp {
+    top: 0;
+    right: 0;
+    font-size: 0.7em;
+  }
+}
+
+
+// Draw result card rendered from [抽奖结果]...[/抽奖结果]
+.choujiang-result-card {
+  margin: 1.5em 0 0.5em;
+  overflow: hidden;
+  border: 1px solid var(--primary-low);
+  border-radius: 10px;
+  background: var(--secondary);
+  box-shadow: 0 2px 10px rgb(0 0 0 / 6%);
+
+  .cj-result-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1em;
+    padding: 1em 1.1em;
+    border-bottom: 1px solid var(--primary-low);
+    background: var(--primary-very-low);
+  }
+
+  .cj-result-kicker {
+    margin-bottom: 0.2em;
+    color: var(--primary-medium);
+    font-size: 0.78em;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+  }
+
+  .cj-result-title {
+    color: var(--primary);
+    font-size: 1.08em;
+    font-weight: 700;
+  }
+
+  .cj-result-status {
+    flex: none;
+    padding: 0.28em 0.62em;
+    border-radius: 999px;
+    color: var(--success);
+    background: var(--success-low);
+    font-size: 0.82em;
+    font-weight: 700;
+  }
+
+  .cj-result-meta {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 0.8em;
+    padding: 0.9em 1.1em 0;
+
+    > div {
+      min-width: 0;
+    }
+
+    span {
+      display: block;
+      margin-bottom: 0.18em;
+      color: var(--primary-medium);
+      font-size: 0.76em;
+    }
+
+    code,
+    strong {
+      display: block;
+      overflow-wrap: anywhere;
+      color: var(--primary);
+      font-size: 0.88em;
+    }
+  }
+
+  .cj-result-winners {
+    display: grid;
+    gap: 0.65em;
+    padding: 1em 1.1em 1.1em;
+  }
+
+  .cj-result-winner {
+    display: grid;
+    grid-template-columns: max-content minmax(0, 1fr) minmax(140px, auto);
+    gap: 0.85em;
+    align-items: center;
+    padding: 0.75em 0.85em;
+    border: 1px solid var(--primary-low);
+    border-radius: 8px;
+    background: var(--primary-very-low);
+  }
+
+  .cj-result-rank {
+    padding: 0.25em 0.55em;
+    border-radius: 6px;
+    background: var(--tertiary-low);
+    color: var(--tertiary);
+    font-size: 0.82em;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .cj-result-winner-main {
+    min-width: 0;
+  }
+
+  .cj-result-user {
+    display: inline-block;
+    margin-right: 0.5em;
+    font-weight: 700;
+  }
+
+  .cj-result-user-id {
+    color: var(--primary-medium);
+    font-size: 0.78em;
+    white-space: nowrap;
+  }
+
+  .cj-result-prize {
+    min-width: 0;
+    overflow-wrap: anywhere;
+    font-weight: 600;
+    text-align: right;
+
+    span {
+      margin-right: 0.45em;
+      color: var(--primary-medium);
+      font-size: 0.78em;
+      font-weight: 400;
+    }
+  }
+}
+
+@media (max-width: 600px) {
+  .choujiang-result-card {
+    .cj-result-meta {
+      grid-template-columns: 1fr;
+    }
+
+    .cj-result-winner {
+      grid-template-columns: max-content minmax(0, 1fr);
+    }
+
+    .cj-result-prize {
+      grid-column: 2;
+      text-align: left;
+    }
+  }
+}
