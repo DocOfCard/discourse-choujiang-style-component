@@ -10,7 +10,7 @@ export default apiInitializer("1.14.0", (api) => {
       }
 
       decorateParticipationStamp($elem, helper);
-      decorateLotteryResult($elem, helper);
+      decorateLotteryResult($elem);
 
       const rawHtml = $elem.html();
       const match = rawHtml.match(/\[抽奖\]([\s\S]*?)\[\/抽奖\]/);
@@ -104,60 +104,43 @@ function isInstructionTopic(helper, siteSettings) {
 
 
 
-function decorateLotteryResult($elem, helper) {
+function decorateLotteryResult($elem) {
   if ($elem.find(".choujiang-result-card").length) {
     return;
   }
 
-  const model = helper?.getModel?.();
-  const serialized = model?.choujiang_result || model?.choujiangResult;
   const rawHtml = $elem.html();
-  let fields = {};
-  let winners = [];
+  const match = rawHtml.match(/\[抽奖结果\]([\s\S]*?)\[\/抽奖结果\]/);
+  if (!match) {
+    return;
+  }
 
-  if (serialized) {
-    fields = {
-      "抽奖名称": serialized.title || "",
-      "活动奖品": serialized.prize || "",
-      "开奖记录": serialized.external_draw_id || "-",
-      "开奖时间": serialized.drawn_at || "-",
-    };
-    winners = (serialized.winners || []).map((winner) => ({
-      rank: winner.rank,
-      userId: winner.user_id,
-      username: winner.username,
-      prize: winner.prize || serialized.prize || "-",
-    }));
-  } else {
-    const match = rawHtml.match(/\[抽奖结果\]([\s\S]*?)\[\/抽奖结果\]/);
-    if (!match) {
-      return;
+  const content = match[1]
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<\/p>\s*<p[^>]*>/gi, "\n")
+    .replace(/<\/?[^>]+>/g, "");
+  const lines = content
+    .split("\n")
+    .map((line) => decodeHtml(line).trim())
+    .filter(Boolean);
+  const fields = {};
+  const winners = [];
+
+  for (const line of lines) {
+    const winner = line.match(/^中奖者(\d+)[：:](\-?\d+)\|([^|]*)\|(.*)$/);
+    if (winner) {
+      winners.push({
+        rank: winner[1],
+        userId: winner[2],
+        username: winner[3],
+        prize: winner[4],
+      });
+      continue;
     }
 
-    const content = match[1]
-      .replace(/<br\s*\/?>/gi, "\n")
-      .replace(/<\/p>\s*<p[^>]*>/gi, "\n")
-      .replace(/<\/?[^>]+>/g, "");
-    const lines = content
-      .split("\n")
-      .map((line) => decodeHtml(line).trim())
-      .filter(Boolean);
-
-    for (const line of lines) {
-      const winner = line.match(/^中奖者(\d+)[：:](\d+)\|(\-?\d+)\|([^|]*)\|(.*)$/);
-      if (winner) {
-        winners.push({
-          rank: winner[2],
-          userId: winner[3],
-          username: winner[4],
-          prize: winner[5],
-        });
-        continue;
-      }
-      const field = line.match(/^([^：:]+)[：:](.*)$/);
-      if (field) {
-        fields[field[1].trim()] = field[2].trim();
-      }
+    const field = line.match(/^([^：:]+)[：:](.*)$/);
+    if (field) {
+      fields[field[1].trim()] = field[2].trim();
     }
   }
 
@@ -174,42 +157,23 @@ function decorateLotteryResult($elem, helper) {
             <a class="cj-result-user" href="/u/${encodeURIComponent(winner.username)}">@${escapeHtml(winner.username)}</a>
             <span class="cj-result-user-id">ID ${escapeHtml(winner.userId)}</span>
           </div>
-          <div class="cj-result-prize"><span>奖品</span>${escapeHtml(winner.prize || fields["活动奖品"] || "-")}</div>
+          <div class="cj-result-prize"><span>活动奖品</span>${escapeHtml(winner.prize || fields["活动奖品"] || "-")}</div>
         </div>`
     )
     .join("");
 
   const resultHtml = `
     <div class="choujiang-result-card">
-      <div class="cj-result-header">
-        <div>
-          <div class="cj-result-kicker">开奖结果</div>
-          <div class="cj-result-title">${escapeHtml(fields["抽奖名称"] || "抽奖活动")}</div>
-        </div>
-        <div class="cj-result-status">已开奖</div>
-      </div>
-      <div class="cj-result-meta">
-        <div><span>开奖记录</span><code>${escapeHtml(fields["开奖记录"] || "-")}</code></div>
-        <div><span>开奖时间</span><strong>${escapeHtml(fields["开奖时间"] || "-")}</strong></div>
-      </div>
+      <div class="cj-result-title">🎉 开奖结果：${escapeHtml(fields["抽奖名称"] || "抽奖活动")}</div>
+      <ul class="cj-result-info">
+        <li><span>开奖记录：</span><code>${escapeHtml(fields["开奖记录"] || "-")}</code></li>
+        <li><span>开奖时间：</span>${escapeHtml(fields["开奖时间"] || "-")}</li>
+      </ul>
       <div class="cj-result-winners">${winnerHtml}</div>
+      <div class="cj-result-footer">恭喜中奖用户！</div>
     </div>`;
 
-  if (/\[抽奖结果\][\s\S]*?\[\/抽奖结果\]/.test(rawHtml)) {
-    $elem.html(rawHtml.replace(/\[抽奖结果\][\s\S]*?\[\/抽奖结果\]/, resultHtml));
-    return;
-  }
-
-  // Legacy results (plugin <= 3.3.2) were appended as plain Markdown at the
-  // end of the first post. For already-drawn topics, use the serializer above
-  // to render the same structured card and replace that old tail in-place.
-  const legacyStart = rawHtml.search(/(?:🎉\s*)?<strong>抽奖活动已开奖！<\/strong>/);
-  if (legacyStart >= 0) {
-    $elem.html(`${rawHtml.slice(0, legacyStart)}${resultHtml}`);
-    return;
-  }
-
-  $elem.append(resultHtml);
+  $elem.html(rawHtml.replace(/\[抽奖结果\][\s\S]*?\[\/抽奖结果\]/, resultHtml));
 }
 
 function decorateParticipationStamp($elem, helper) {

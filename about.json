@@ -4,6 +4,6 @@
   "license_url": "https://opensource.org/licenses/MIT",
   "component": true,
   "authors": "maiizii, DocOfCard",
-  "theme_version": "1.3.1",
+  "theme_version": "1.3.2",
   "minimum_discourse_version": "3.5.0"
 }

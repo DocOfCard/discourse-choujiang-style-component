@@ -133,88 +133,45 @@ html.dark .choujiang-participation-stamp.is-winner {
 }
 
 
-// Draw result card rendered from [抽奖结果]...[/抽奖结果]
-// Keep the visual language aligned with the normal .choujiang-card above:
-// light surface, tertiary accent, compact information hierarchy.
+// Draw result card. This intentionally mirrors .choujiang-card above.
 .choujiang-result-card {
   margin: 20px 0;
-  padding: 18px 14px 14px;
+  padding: 18px 14px;
   border: 1px solid var(--primary-low);
   border-radius: 8px;
   background: var(--primary-very-low);
   box-shadow: 0 1px 3px rgb(0 0 0 / 3%);
 
-  .cj-result-header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 1em;
-    margin-bottom: 12px;
-  }
-
-  .cj-result-kicker {
-    margin-bottom: 2px;
-    color: var(--primary-medium);
-    font-size: 0.78em;
-    font-weight: 700;
-    letter-spacing: 0.04em;
-  }
-
   .cj-result-title {
+    margin-bottom: 10px;
     color: var(--tertiary);
     font-size: 1.2em;
     font-weight: 700;
-    line-height: 1.35;
   }
 
-  .cj-result-status {
-    flex: none;
-    margin-top: 1px;
-    padding: 0.24em 0.62em;
-    border: 1px solid color-mix(in srgb, var(--success) 35%, transparent);
-    border-radius: 999px;
-    color: var(--success);
-    background: color-mix(in srgb, var(--success) 10%, var(--secondary));
-    font-size: 0.76em;
-    font-weight: 700;
-    line-height: 1.4;
-  }
-
-  .cj-result-meta {
+  .cj-result-info {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.55em 1.25em;
-    margin-bottom: 12px;
-    padding: 9px 11px;
-    border: 1px solid var(--primary-low);
-    border-radius: 6px;
-    background: var(--secondary);
+    gap: 4px 20px;
+    margin: 0 0 12px;
+    padding: 0;
+    list-style: none;
 
-    > div {
-      display: flex;
-      min-width: 0;
-      align-items: baseline;
-      gap: 0.45em;
+    li {
+      margin: 0;
+      color: var(--primary);
     }
 
     span {
-      flex: none;
       color: var(--primary-medium);
-      font-size: 0.78em;
-    }
-
-    code,
-    strong {
-      min-width: 0;
-      overflow-wrap: anywhere;
-      color: var(--primary);
-      font-size: 0.84em;
-      font-weight: 600;
     }
 
     code {
-      padding: 0;
-      background: transparent;
+      padding: 0.08em 0.3em;
+      border-radius: 4px;
+      background: var(--primary-low);
+      color: var(--primary);
+      font-size: 0.9em;
     }
   }
 
@@ -225,32 +182,18 @@ html.dark .choujiang-participation-stamp.is-winner {
 
   .cj-result-winner {
     display: grid;
-    grid-template-columns: max-content minmax(0, 1fr) minmax(150px, auto);
+    grid-template-columns: 5.5em minmax(0, 1fr) minmax(160px, 0.8fr);
     gap: 12px;
     align-items: center;
-    padding: 11px 12px;
+    padding: 10px 12px;
     border: 1px solid var(--primary-low);
-    border-left: 3px solid var(--tertiary);
     border-radius: 7px;
     background: var(--secondary);
-    transition: border-color 0.15s ease, box-shadow 0.15s ease;
-
-    &:hover {
-      border-color: color-mix(in srgb, var(--tertiary) 30%, var(--primary-low));
-      border-left-color: var(--tertiary);
-      box-shadow: 0 2px 7px rgb(0 0 0 / 5%);
-    }
   }
 
   .cj-result-rank {
-    min-width: 3.5em;
-    padding: 0.28em 0.58em;
-    border-radius: 6px;
     color: var(--tertiary);
-    background: var(--tertiary-low);
-    font-size: 0.8em;
-    font-weight: 800;
-    text-align: center;
+    font-weight: 700;
     white-space: nowrap;
   }
 
@@ -258,83 +201,68 @@ html.dark .choujiang-participation-stamp.is-winner {
     display: flex;
     min-width: 0;
     flex-wrap: wrap;
-    align-items: baseline;
-    gap: 0.2em 0.65em;
+    align-items: center;
+    gap: 0.35em 0.65em;
   }
 
   .cj-result-user {
     min-width: 0;
     overflow: hidden;
     color: var(--tertiary);
-    font-size: 1.02em;
     font-weight: 700;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
 
   .cj-result-user-id {
-    padding: 0.12em 0.42em;
-    border-radius: 4px;
     color: var(--primary-medium);
-    background: var(--primary-very-low);
-    font-size: 0.72em;
-    font-weight: 600;
+    font-size: 0.82em;
     white-space: nowrap;
   }
 
   .cj-result-prize {
     min-width: 0;
-    overflow-wrap: anywhere;
     color: var(--primary);
     font-weight: 700;
-    text-align: right;
+    overflow-wrap: anywhere;
 
     span {
       display: block;
-      margin: 0 0 1px;
+      margin-bottom: 1px;
       color: var(--primary-medium);
-      font-size: 0.7em;
+      font-size: 0.78em;
       font-weight: 400;
     }
+  }
+
+  .cj-result-footer {
+    margin-top: 12px;
+    color: var(--tertiary);
+    font-weight: 700;
   }
 }
 
 @media (max-width: 600px) {
   .choujiang-result-card {
-    padding: 15px 12px 12px;
+    .cj-result-info {
+      display: block;
 
-    .cj-result-header {
-      gap: 0.75em;
-    }
-
-    .cj-result-title {
-      font-size: 1.08em;
-    }
-
-    .cj-result-meta {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 0.38em;
-
-      > div {
-        display: grid;
-        grid-template-columns: max-content minmax(0, 1fr);
+      li + li {
+        margin-top: 4px;
       }
     }
 
     .cj-result-winner {
       grid-template-columns: max-content minmax(0, 1fr);
-      gap: 8px 10px;
-      padding: 10px;
+      gap: 7px 10px;
     }
 
     .cj-result-prize {
       grid-column: 2;
-      text-align: left;
 
       span {
         display: inline;
-        margin-right: 0.45em;
+        margin-right: 0.4em;
       }
     }
   }
