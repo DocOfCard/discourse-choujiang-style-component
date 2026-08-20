@@ -11,6 +11,7 @@ export default apiInitializer("1.14.0", (api) => {
 
       decorateParticipationStamp($elem, helper);
       decorateLotteryResult($elem);
+      hydrateUserChips($elem);
 
       const rawHtml = $elem.html();
       const match = rawHtml.match(/\[抽奖\]([\s\S]*?)\[\/抽奖\]/);
@@ -65,11 +66,11 @@ export default apiInitializer("1.14.0", (api) => {
             ${prizes.map((item) => `
               <div class="cj-prize-item">
                 <strong>${escapeHtml(item.label)}</strong>
-                <span class="cj-prize-name">${escapeHtml(item.prize)}</span>
+                <span class="cj-prize-name">${formatTextWithUserChips(item.prize)}</span>
                 <span class="cj-prize-count">× ${escapeHtml(item.count)}</span>
               </div>`).join("")}
           </div>`
-        : `<div class="cj-single-prize"><span>活动奖品：</span><strong>${escapeHtml(fields["活动奖品"] || "")}</strong></div>`;
+        : `<div class="cj-single-prize"><span>活动奖品：</span><strong>${formatTextWithUserChips(fields["活动奖品"] || "")}</strong></div>`;
 
       const html = `
         <div class="choujiang-card ${prizes.length ? "is-multi-prize" : ""}">
@@ -89,6 +90,7 @@ export default apiInitializer("1.14.0", (api) => {
       $elem.html(
         rawHtml.replace(/\[抽奖\][\s\S]*?\[\/抽奖\]/, html)
       );
+      hydrateUserChips($elem);
     },
     { id: "discourse-choujiang-card" }
   );
@@ -183,9 +185,9 @@ function decorateLotteryResult($elem) {
         <div class="cj-result-winner">
           <div class="cj-result-rank">第 ${escapeHtml(winner.rank)} 名</div>
           <div class="cj-result-winner-main">
-            <a class="cj-result-user" href="/u/${encodeURIComponent(winner.username)}">@${escapeHtml(winner.username)}</a>
+            ${userChipHtml(winner.username, "cj-result-user")}
           </div>
-          <div class="cj-result-prize"><span>${escapeHtml(winner.prizeLabel || "活动奖品")}</span>${escapeHtml(winner.prize || fields["活动奖品"] || "-")}</div>
+          <div class="cj-result-prize"><span>${escapeHtml(winner.prizeLabel || "活动奖品")}</span>${formatTextWithUserChips(winner.prize || fields["活动奖品"] || "-")}</div>
         </div>`
     )
     .join("");
@@ -201,6 +203,117 @@ function decorateLotteryResult($elem) {
     </div>`;
 
   $elem.html(rawHtml.replace(/\[抽奖结果\][\s\S]*?\[\/抽奖结果\]/, resultHtml));
+  hydrateUserChips($elem);
+}
+
+const userAvatarCache = new Map();
+
+function normalizeUsername(value) {
+  return String(value || "").trim().replace(/^@/, "");
+}
+
+function userChipHtml(username, extraClass = "") {
+  const clean = normalizeUsername(username);
+  if (!clean) {
+    return "";
+  }
+
+  const href = `/u/${encodeURIComponent(clean)}`;
+  return `<a class="cj-user-chip ${extraClass}" data-cj-username="${escapeHtml(clean)}" href="${href}">
+    <span class="cj-user-avatar-placeholder" aria-hidden="true"></span>
+    <span class="cj-user-chip-name">@${escapeHtml(clean)}</span>
+  </a>`;
+}
+
+function formatTextWithUserChips(value) {
+  const text = String(value ?? "");
+  const mentionRegex = /(^|[\\s（(【[])(@([A-Za-z0-9_][A-Za-z0-9_.-]{0,59}))/g;
+  let output = "";
+  let lastIndex = 0;
+  let match;
+
+  while ((match = mentionRegex.exec(text)) !== null) {
+    const prefix = match[1] || "";
+    const fullMention = match[2];
+    const username = match[3];
+    const mentionStart = match.index + prefix.length;
+
+    output += escapeHtml(text.slice(lastIndex, mentionStart));
+    output += userChipHtml(username);
+    lastIndex = mentionStart + fullMention.length;
+  }
+
+  output += escapeHtml(text.slice(lastIndex));
+  return output;
+}
+
+async function fetchUserAvatar(username) {
+  const key = normalizeUsername(username).toLowerCase();
+  if (!key) {
+    return null;
+  }
+
+  if (!userAvatarCache.has(key)) {
+    userAvatarCache.set(
+      key,
+      fetch(`/u/${encodeURIComponent(username)}.json`, {
+        headers: { Accept: "application/json" },
+        credentials: "same-origin",
+      })
+        .then((response) => (response.ok ? response.json() : null))
+        .then((data) => {
+          const user = data?.user;
+          if (!user?.avatar_template) {
+            return null;
+          }
+          return {
+            username: user.username || username,
+            avatarUrl: user.avatar_template.replace("{size}", "48"),
+          };
+        })
+        .catch(() => null)
+    );
+  }
+
+  return userAvatarCache.get(key);
+}
+
+function hydrateUserChips($elem) {
+  const root = $elem?.[0];
+  if (!root) {
+    return;
+  }
+
+  root.querySelectorAll(".cj-user-chip[data-cj-username]").forEach((chip) => {
+    if (chip.dataset.cjAvatarLoaded === "1") {
+      return;
+    }
+    chip.dataset.cjAvatarLoaded = "1";
+    const username = chip.dataset.cjUsername;
+
+    fetchUserAvatar(username).then((user) => {
+      if (!user || !chip.isConnected) {
+        return;
+      }
+
+      const placeholder = chip.querySelector(".cj-user-avatar-placeholder");
+      if (placeholder && user.avatarUrl) {
+        const img = document.createElement("img");
+        img.className = "cj-user-avatar";
+        img.src = user.avatarUrl;
+        img.alt = "";
+        img.loading = "lazy";
+        img.width = 24;
+        img.height = 24;
+        placeholder.replaceWith(img);
+      }
+
+      const name = chip.querySelector(".cj-user-chip-name");
+      if (name && user.username) {
+        name.textContent = `@${user.username}`;
+      }
+    });
+  });
 }
 
 function decorateParticipationStamp($elem, helper) {

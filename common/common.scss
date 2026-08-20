@@ -327,3 +327,64 @@ html.dark .choujiang-participation-stamp.is-winner {
     }
   }
 }
+
+
+// User avatar + @username chips used by sponsors and winners.
+.cj-user-chip {
+  display: inline-flex;
+  max-width: 100%;
+  align-items: center;
+  gap: 0.38em;
+  vertical-align: middle;
+  color: var(--tertiary);
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+
+  &:hover {
+    color: var(--tertiary-hover);
+    text-decoration: none;
+  }
+}
+
+.cj-user-avatar,
+.cj-user-avatar-placeholder {
+  width: 24px;
+  height: 24px;
+  flex: 0 0 24px;
+  border-radius: 50%;
+}
+
+.cj-user-avatar {
+  display: block;
+  object-fit: cover;
+}
+
+.cj-user-avatar-placeholder {
+  display: inline-block;
+  background: var(--primary-low);
+}
+
+.cj-user-chip-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.choujiang-card .cj-prize-name .cj-user-chip {
+  margin-right: 0.18em;
+}
+
+.choujiang-result-card .cj-result-user.cj-user-chip {
+  overflow: visible;
+  text-overflow: clip;
+}
+
+@media (max-width: 600px) {
+  .cj-user-avatar,
+  .cj-user-avatar-placeholder {
+    width: 22px;
+    height: 22px;
+    flex-basis: 22px;
+  }
+}
