@@ -78,3 +78,8 @@
 - 头像 + `@用户名` 徽标接入 Discourse 原生 User Card。
 - 点击头像或用户名都会打开论坛原生用户小卡片，而不是直接跳转用户页；保留用户页链接作为原生 fallback。
 - 用户资料异步加载后同步校正 `data-user-card` 与用户主页地址。
+
+
+## v1.3.7
+- 用户头像和 `@用户名` 仅用于触发 Discourse 原生 User Card。
+- 移除用户主页跳转 fallback；点击不再进入 `/u/username` 用户页面。

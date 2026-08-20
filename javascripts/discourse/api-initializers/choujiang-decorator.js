@@ -218,8 +218,7 @@ function userChipHtml(username, extraClass = "") {
     return "";
   }
 
-  const href = `/u/${encodeURIComponent(clean)}`;
-  return `<a class="cj-user-chip ${extraClass}" data-cj-username="${escapeHtml(clean)}" data-user-card="${escapeHtml(clean)}" href="${href}">
+  return `<a class="cj-user-chip ${extraClass}" data-cj-username="${escapeHtml(clean)}" data-user-card="${escapeHtml(clean)}" href="#" role="button">
     <span class="cj-user-avatar-placeholder" aria-hidden="true"></span>
     <span class="cj-user-chip-name">@${escapeHtml(clean)}</span>
   </a>`;
@@ -311,7 +310,6 @@ function hydrateUserChips($elem) {
       const name = chip.querySelector(".cj-user-chip-name");
       if (user.username) {
         chip.dataset.userCard = user.username;
-        chip.href = `/u/${encodeURIComponent(user.username)}`;
       }
       if (name && user.username) {
         name.textContent = `@${user.username}`;
