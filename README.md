@@ -83,3 +83,9 @@
 ## v1.3.7
 - 用户头像和 `@用户名` 仅用于触发 Discourse 原生 User Card。
 - 移除用户主页跳转 fallback；点击不再进入 `/u/username` 用户页面。
+
+
+## v1.3.8
+- 用户头像和 `@用户名` 触发器由 `href="#"` 链接改为无导航的 `button`。
+- 点击仅触发 Discourse 原生 User Card，不再修改 URL hash，因此页面不会跳动。
+- 保留键盘可访问性，并重置按钮默认样式以维持原有视觉。

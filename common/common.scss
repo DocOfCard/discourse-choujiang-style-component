@@ -331,6 +331,13 @@ html.dark .choujiang-participation-stamp.is-winner {
 
 // User avatar + @username chips used by sponsors and winners.
 .cj-user-chip {
+  appearance: none;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
   display: inline-flex;
   max-width: 100%;
   align-items: center;

@@ -218,10 +218,10 @@ function userChipHtml(username, extraClass = "") {
     return "";
   }
 
-  return `<a class="cj-user-chip ${extraClass}" data-cj-username="${escapeHtml(clean)}" data-user-card="${escapeHtml(clean)}" href="#" role="button">
+  return `<button type="button" class="cj-user-chip ${extraClass}" data-cj-username="${escapeHtml(clean)}" data-user-card="${escapeHtml(clean)}" aria-label="查看 @${escapeHtml(clean)} 的用户卡片">
     <span class="cj-user-avatar-placeholder" aria-hidden="true"></span>
     <span class="cj-user-chip-name">@${escapeHtml(clean)}</span>
-  </a>`;
+  </button>`;
 }
 
 function formatTextWithUserChips(value) {
